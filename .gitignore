@@ -1,0 +1,4 @@
+/pyscada/visa/migrations/*.pyc
+*.pyc
+/build/*
+/pyscada_visa.egg-info/*
