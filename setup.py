@@ -39,7 +39,5 @@ author=pyscada_app.__author__,
     packages=find_packages(exclude=["project", "project.*"]),
     include_package_data=True,
     zip_safe=False,
-    test_suite='runtests.main',
-    namespace_packages=['pyscada']
-
+    test_suite='runtests.main'
 )
