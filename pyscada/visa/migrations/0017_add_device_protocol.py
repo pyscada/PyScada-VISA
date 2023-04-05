@@ -10,16 +10,14 @@ def forwards_func(apps, schema_editor):
     # if we directly import it, it'll be the wrong version
     DeviceProtocol = apps.get_model("pyscada", "DeviceProtocol")
     db_alias = schema_editor.connection.alias
-    DeviceProtocol.objects.using(db_alias).filter(protocol='visa').delete()
-    DeviceProtocol.objects.using(db_alias).bulk_create([
-        DeviceProtocol(pk=PROTOCOL_ID,
-                       protocol='visa',
-                       description='VISA Device',
-                       app_name='pyscada.visa',
-                       device_class='pyscada.visa.device',
-                       daq_daemon=True,
-                       single_thread=True),
-    ])
+    DeviceProtocol.objects.using(db_alias).update_or_create(protocol='visa',
+                                                            defaults={'pk': PROTOCOL_ID,
+                                                                      'description': 'VISA Device',
+                                                                      'app_name': 'pyscada.visa',
+                                                                      'device_class': 'pyscada.visa.device',
+                                                                      'daq_daemon': True,
+                                                                      'single_thread': True}
+                                                            )
 
 
 def reverse_func(apps, schema_editor):
