@@ -1,5 +1,6 @@
 /pyscada/visa/migrations/*.pyc
 *.pyc
 /build/*
+/dist/*
 /pyscada_visa.egg-info/*
 /.idea/*
