@@ -76,9 +76,9 @@ class GenericDevice(GenericHandlerDevice):
         read values from the device
         """
         if self.inst is None:
-            logger.error("%s has no visa instrument defined" % self)
-            self.connect()
-            return None
+            logger.error(f"{self._device} not connected, trying to connect...")
+            if not self.connect():
+                return None
         device_property = variable_instance.visavariable.device_property.upper()
         if device_property == 'present_value'.upper():
             return self.parse_value(self.inst.query(':READ?'))
@@ -112,6 +112,11 @@ class GenericDevice(GenericHandlerDevice):
         """
         write values to the device
         """
+        if self.inst is None:
+            logger.error(f"{self._device} not connected, trying to connect...")
+            if not self.connect():
+                return None
+
         variable = self._variables[variable_id]
         if variable.visavariable.device_property != '':
             # write the freq property to VariableProperty use that for later read
