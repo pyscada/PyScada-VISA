@@ -41,8 +41,8 @@ class GenericDevice(GenericHandlerDevice):
         try:
             if self.rm is None:
                 self.rm = pyvisa.ResourceManager(visa_backend)
-        except:
-            logger.error("Visa ResourceManager cannot load resources : %s" % self)
+        except Exception as e:
+            self._not_accessible_reason = f"Visa ResourceManager error : {e}"
             result = False
 
         if self.rm is not None:
@@ -58,9 +58,7 @@ class GenericDevice(GenericHandlerDevice):
                 logger.debug('Connected visa device : %s with VISA_DEVICE_SETTINGS for %s: %r' %
                              (self._device.visadevice.resource_name, resource_prefix, extras))
             except Exception as e:
-                # logger.debug(e)
                 self._not_accessible_reason = e
-                # logger.error("Visa ResourceManager cannot open resource : %s" % self._device.visadevice.resource_name)
                 result = False
 
         self.accessibility()
