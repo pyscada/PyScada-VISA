@@ -6,9 +6,9 @@ from django.utils.translation import gettext_lazy as _
 
 
 class PyScadaVISAConfig(AppConfig):
-    name = 'pyscada.visa'
+    name = "pyscada.visa"
     verbose_name = _("PyScada VISA")
-    default_auto_field = 'django.db.models.AutoField'
+    default_auto_field = "django.db.models.AutoField"
 
     def ready(self):
         import pyscada.visa.signals

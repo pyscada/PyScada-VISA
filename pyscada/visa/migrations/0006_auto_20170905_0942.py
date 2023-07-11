@@ -6,15 +6,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('visa', '0005_extendedvisadevice_extendedvisavariable'),
+        ("visa", "0005_extendedvisadevice_extendedvisavariable"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='visadevice',
-            name='resource_name',
-            field=models.CharField(default='GPIB0::22::INSTR', help_text=" 'Examles for:\nGPIB0::22::INSTR' for GPIB Instrument\n\n                                      'TCPIP::192.168.228.104::INSTR' for TCPIP/LXI Intruments\n \n                                      'USB0::0x1AB1::0x4CE::DS1ZA181806919::INSTR'\n \n                                      'ASRL/dev/ttyUSB0::INSTR'\n \n                                      http://pyvisa.readthedocs.io/en/stable/names.html", max_length=255),
+            model_name="visadevice",
+            name="resource_name",
+            field=models.CharField(
+                default="GPIB0::22::INSTR",
+                help_text=" 'Examles for:\nGPIB0::22::INSTR' for GPIB Instrument\n\n                                      'TCPIP::192.168.228.104::INSTR' for TCPIP/LXI Intruments\n \n                                      'USB0::0x1AB1::0x4CE::DS1ZA181806919::INSTR'\n \n                                      'ASRL/dev/ttyUSB0::INSTR'\n \n                                      http://pyvisa.readthedocs.io/en/stable/names.html",
+                max_length=255,
+            ),
         ),
     ]

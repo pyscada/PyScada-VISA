@@ -6,35 +6,32 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pyscada', '0039_auto_20170711_1326'),
-        ('visa', '0004_auto_20170711_1326'),
+        ("pyscada", "0039_auto_20170711_1326"),
+        ("visa", "0004_auto_20170711_1326"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ExtendedVISADevice',
-            fields=[
-            ],
+            name="ExtendedVISADevice",
+            fields=[],
             options={
-                'verbose_name': 'VISA Device',
-                'proxy': True,
-                'verbose_name_plural': 'VISA Devices',
-                'indexes': [],
+                "verbose_name": "VISA Device",
+                "proxy": True,
+                "verbose_name_plural": "VISA Devices",
+                "indexes": [],
             },
-            bases=('pyscada.device',),
+            bases=("pyscada.device",),
         ),
         migrations.CreateModel(
-            name='ExtendedVISAVariable',
-            fields=[
-            ],
+            name="ExtendedVISAVariable",
+            fields=[],
             options={
-                'verbose_name': 'VISA Variable',
-                'proxy': True,
-                'verbose_name_plural': 'VISA Variable',
-                'indexes': [],
+                "verbose_name": "VISA Variable",
+                "proxy": True,
+                "verbose_name_plural": "VISA Variable",
+                "indexes": [],
             },
-            bases=('pyscada.variable',),
+            bases=("pyscada.variable",),
         ),
     ]

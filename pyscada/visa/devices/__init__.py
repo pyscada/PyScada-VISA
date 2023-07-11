@@ -8,6 +8,7 @@ from django.conf import settings
 
 try:
     import pyvisa
+
     driver_ok = True
 except ImportError:
     visa = None
@@ -34,8 +35,8 @@ class GenericDevice(GenericHandlerDevice):
         super().connect()
         result = True
 
-        visa_backend = '@py'  # use PyVISA-py as backend
-        if hasattr(settings, 'VISA_BACKEND'):
+        visa_backend = "@py"  # use PyVISA-py as backend
+        if hasattr(settings, "VISA_BACKEND"):
             visa_backend = settings.VISA_BACKEND
 
         try:
@@ -47,16 +48,20 @@ class GenericDevice(GenericHandlerDevice):
 
         if self.rm is not None:
             try:
-                resource_prefix = self._device.visadevice.resource_name.split('::')[0]
+                resource_prefix = self._device.visadevice.resource_name.split("::")[0]
                 extras = {}
-                if hasattr(settings, 'VISA_DEVICE_SETTINGS'):
+                if hasattr(settings, "VISA_DEVICE_SETTINGS"):
                     if resource_prefix in settings.VISA_DEVICE_SETTINGS:
                         extras = settings.VISA_DEVICE_SETTINGS[resource_prefix]
                 if self.inst is None:
-                    self.inst = self.rm.open_resource(self._device.visadevice.resource_name, **extras)
+                    self.inst = self.rm.open_resource(
+                        self._device.visadevice.resource_name, **extras
+                    )
 
-                logger.debug('Connected visa device : %s with VISA_DEVICE_SETTINGS for %s: %r' %
-                             (self._device.visadevice.resource_name, resource_prefix, extras))
+                logger.debug(
+                    "Connected visa device : %s with VISA_DEVICE_SETTINGS for %s: %r"
+                    % (self._device.visadevice.resource_name, resource_prefix, extras)
+                )
             except Exception as e:
                 self._not_accessible_reason = e
                 result = False
@@ -80,15 +85,18 @@ class GenericDevice(GenericHandlerDevice):
             if not self.connect():
                 return None
         device_property = variable_instance.visavariable.device_property.upper()
-        if device_property == 'present_value'.upper():
-            return self.parse_value(self.inst.query(':READ?'))
+        if device_property == "present_value".upper():
+            return self.parse_value(self.inst.query(":READ?"))
         else:
             try:
                 value = self.inst.query(device_property)
             except pyvisa.errors.VisaIOError as e:
-                logger.info('VisaIOError while querying value for variable %s' %variable_instance)
+                logger.info(
+                    "VisaIOError while querying value for variable %s"
+                    % variable_instance
+                )
                 value = None
-            #logger.info("%s data-property : %s - value : %s" % (self, device_property, value))
+            # logger.info("%s data-property : %s - value : %s" % (self, device_property, value))
             #            return value.split(',')[0]
             return self.parse_value(value, variable_instance=variable_instance)
 
@@ -118,7 +126,7 @@ class GenericDevice(GenericHandlerDevice):
                 return None
 
         variable = self._variables[variable_id]
-        if variable.visavariable.device_property != '':
+        if variable.visavariable.device_property != "":
             # write the freq property to VariableProperty use that for later read
             # vp = VariableProperty.objects.update_or_create_property(variable=variable, name=task.property_name.upper(),
             #                                                        value=value, value_class='FLOAT64')
@@ -129,7 +137,9 @@ class GenericDevice(GenericHandlerDevice):
             if variable.dictionary is not None:
                 value = variable.dictionary.get_label(value)
             try:
-                read_value = self.inst.query(str(variable.visavariable.device_property) + ' ' + str(value))
+                read_value = self.inst.query(
+                    str(variable.visavariable.device_property) + " " + str(value)
+                )
             except pyvisa.errors.VisaIOError as e:
                 read_value = None
             return self.parse_value(read_value)
@@ -141,9 +151,9 @@ class GenericDevice(GenericHandlerDevice):
         takes a string in the Tektronix AFG1022 format and returns a float value or None if not parseable
         """
         try:
-            if 'variable_instance' in kwargs:
-                logger.debug(kwargs['variable_instance'])
-                return float(kwargs['variable_instance'].convert_string_value(value))
+            if "variable_instance" in kwargs:
+                logger.debug(kwargs["variable_instance"])
+                return float(kwargs["variable_instance"].convert_string_value(value))
             return float(value)
         except Exception as e:
             logger.debug(e)

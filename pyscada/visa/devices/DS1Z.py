@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from pyscada.visa.devices import GenericDevice
 
+
 class Handler(GenericDevice):
     """
     Keithley DMM 2000 and other Devices with the same command set
@@ -14,8 +15,8 @@ class Handler(GenericDevice):
         """
         if self.inst is None:
             return
-        if variable_instance.visavariable.device_property.upper() == 'vrms_chan1':
-            return self.parse_value(self.inst.query(':MEAS:ITEM? VRMS,CHAN1'))
+        if variable_instance.visavariable.device_property.upper() == "vrms_chan1":
+            return self.parse_value(self.inst.query(":MEAS:ITEM? VRMS,CHAN1"))
         else:
             return super().read_data(variable_instance)
 

@@ -6,15 +6,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('visa', '0006_auto_20170905_0942'),
+        ("visa", "0006_auto_20170905_0942"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='visavariable',
-            name='variable_type',
-            field=models.SmallIntegerField(choices=[(0, 'configuration'), (1, 'acquisition'), (2, 'status')]),
+            model_name="visavariable",
+            name="variable_type",
+            field=models.SmallIntegerField(
+                choices=[(0, "configuration"), (1, "acquisition"), (2, "status")]
+            ),
         ),
     ]

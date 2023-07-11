@@ -5,16 +5,19 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pyscada', '0079_devicehandler'),
-        ('visa', '0008_auto_20191004_0912'),
+        ("pyscada", "0079_devicehandler"),
+        ("visa", "0008_auto_20191004_0912"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='visadevice',
-            name='instrument_handler',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='pyscada.DeviceHandler'),
+            model_name="visadevice",
+            name="instrument_handler",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="pyscada.DeviceHandler",
+            ),
         ),
     ]

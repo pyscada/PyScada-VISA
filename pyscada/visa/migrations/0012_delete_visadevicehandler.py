@@ -4,13 +4,12 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('visa', '0011_remove_visadevice_instrument'),
+        ("visa", "0011_remove_visadevice_instrument"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='VISADeviceHandler',
+            name="VISADeviceHandler",
         ),
     ]

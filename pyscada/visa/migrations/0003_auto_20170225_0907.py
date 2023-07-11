@@ -13,15 +13,19 @@ def forwards_func(apps, schema_editor):
     DeviceProtocol = apps.get_model("pyscada", "DeviceProtocol")
     db_alias = schema_editor.connection.alias
     if not DeviceProtocol.objects.using(db_alias).filter(pk=PROTOCOL_ID):
-        DeviceProtocol.objects.using(db_alias).bulk_create([
-            DeviceProtocol(pk=PROTOCOL_ID,
-                           protocol='visa',
-                           description='VISA Device',
-                           app_name='pyscada.visa',
-                           device_class='pyscada.visa.device',
-                           daq_daemon=True,
-                           single_thread=True),
-        ])
+        DeviceProtocol.objects.using(db_alias).bulk_create(
+            [
+                DeviceProtocol(
+                    pk=PROTOCOL_ID,
+                    protocol="visa",
+                    description="VISA Device",
+                    app_name="pyscada.visa",
+                    device_class="pyscada.visa.device",
+                    daq_daemon=True,
+                    single_thread=True,
+                ),
+            ]
+        )
 
 
 def reverse_func(apps, schema_editor):
@@ -34,8 +38,8 @@ def reverse_func(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('visa', '0002_auto_20161124_1002'),
-        ('pyscada', '0036_auto_20170224_1245'),
+        ("visa", "0002_auto_20161124_1002"),
+        ("pyscada", "0036_auto_20170224_1245"),
     ]
 
     operations = [

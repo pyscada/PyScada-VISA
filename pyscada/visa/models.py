@@ -14,10 +14,13 @@ logger = logging.getLogger(__name__)
 
 class VISAVariable(models.Model):
     visa_variable = models.OneToOneField(Variable, on_delete=models.CASCADE)
-    variable_type_choices = ((0, 'configuration'), (1, 'acquisition'), (2, 'status'))
+    variable_type_choices = ((0, "configuration"), (1, "acquisition"), (2, "status"))
     variable_type = models.SmallIntegerField(choices=variable_type_choices)
-    device_property = models.CharField(default='present_value', max_length=255,
-                                       help_text='name of the Property the variable be assigned to')
+    device_property = models.CharField(
+        default="present_value",
+        max_length=255,
+        help_text="name of the Property the variable be assigned to",
+    )
 
     protocol_id = PROTOCOL_ID
 
@@ -27,16 +30,18 @@ class VISAVariable(models.Model):
 
 class VISADevice(models.Model):
     visa_device = models.OneToOneField(Device, on_delete=models.CASCADE)
-    resource_name = models.CharField(max_length=255,
-                                     default='GPIB0::22::INSTR',
-                                     help_text="Examples :<br>"
-                                               "for GPIB instruments : GPIB0::22::INSTR<br>"
-                                               "for TCPIP/LXI instruments : TCPIP::192.168.228.104::INSTR<br>"
-                                               "for USB instruments : USB0::0x1AB1::0x4CE::DS1ZA181806919::INSTR<br>"
-                                               "for Serial instruments : ASRL/dev/ttyUSB0::INSTR<br>"
-                                               "more information <a href='"
-                                               "https://pyvisa.readthedocs.io/en/stable/introduction/communication.html"
-                                               "'>here</a>")
+    resource_name = models.CharField(
+        max_length=255,
+        default="GPIB0::22::INSTR",
+        help_text="Examples :<br>"
+        "for GPIB instruments : GPIB0::22::INSTR<br>"
+        "for TCPIP/LXI instruments : TCPIP::192.168.228.104::INSTR<br>"
+        "for USB instruments : USB0::0x1AB1::0x4CE::DS1ZA181806919::INSTR<br>"
+        "for Serial instruments : ASRL/dev/ttyUSB0::INSTR<br>"
+        "more information <a href='"
+        "https://pyvisa.readthedocs.io/en/stable/introduction/communication.html"
+        "'>here</a>",
+    )
 
     protocol_id = PROTOCOL_ID
 
@@ -53,12 +58,12 @@ class VISADevice(models.Model):
 class ExtendedVISADevice(Device):
     class Meta:
         proxy = True
-        verbose_name = 'VISA Device'
-        verbose_name_plural = 'VISA Devices'
+        verbose_name = "VISA Device"
+        verbose_name_plural = "VISA Devices"
 
 
 class ExtendedVISAVariable(Variable):
     class Meta:
         proxy = True
-        verbose_name = 'VISA Variable'
-        verbose_name_plural = 'VISA Variable'
+        verbose_name = "VISA Variable"
+        verbose_name_plural = "VISA Variable"

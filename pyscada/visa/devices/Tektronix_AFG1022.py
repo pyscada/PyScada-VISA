@@ -32,19 +32,21 @@ class Handler(GenericDevice):
 
     # AFG functions
     def afg_prepare_for_bode(self, ch=1):
-        return self.inst.query('OUTP%d:IMP MAX;SOUR%d:AM:STAT OFF;DISP:SAV:STAT OFF;*OPC?;' % (ch, ch))
+        return self.inst.query(
+            "OUTP%d:IMP MAX;SOUR%d:AM:STAT OFF;DISP:SAV:STAT OFF;*OPC?;" % (ch, ch)
+        )
 
     def afg_set_output_state(self, ch=1, state=True):
         if state:
-            return self.inst.query('OUTP%d:STATe ON;*OPC?;' % ch)
+            return self.inst.query("OUTP%d:STATe ON;*OPC?;" % ch)
         else:
-            return self.inst.query('OUTP%d:STATe OFF;*OPC?;' % ch)
+            return self.inst.query("OUTP%d:STATe OFF;*OPC?;" % ch)
 
     def afg_set_offset(self, ch=1, offset=0):
-        return self.inst.query('SOUR%d:VOLT:LEV:IMM:OFFS %sV;*OPC?;' % (ch, offset))
+        return self.inst.query("SOUR%d:VOLT:LEV:IMM:OFFS %sV;*OPC?;" % (ch, offset))
 
     def afg_set_vpp(self, ch=1, vpp=1):
-        return self.inst.query('SOUR%d:VOLT:LEV:IMM:AMPL %sVpp;*OPC?;' % (ch, str(vpp)))
+        return self.inst.query("SOUR%d:VOLT:LEV:IMM:AMPL %sVpp;*OPC?;" % (ch, str(vpp)))
 
     def afg_set_function_shape(self, ch=1, function_shape=0):
         shape_list = {
@@ -52,10 +54,12 @@ class Handler(GenericDevice):
             1: "RAMP",
             2: "SQUARE",
         }
-        return self.inst.query('SOUR%d:FUNC:SHAP %s;*OPC?;' % (ch, shape_list.get(function_shape, "SIN")))
+        return self.inst.query(
+            "SOUR%d:FUNC:SHAP %s;*OPC?;" % (ch, shape_list.get(function_shape, "SIN"))
+        )
 
     def afg_set_frequency(self, ch=1, frequency=1000):
-        return self.inst.query('SOUR%d:FREQ:FIX %s;*OPC?;' % (ch, str(frequency)))
+        return self.inst.query("SOUR%d:FREQ:FIX %s;*OPC?;" % (ch, str(frequency)))
 
     def reset_instrument(self):
-        return self.inst.query('*RST;*OPC?')
+        return self.inst.query("*RST;*OPC?")

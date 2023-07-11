@@ -5,6 +5,7 @@ from pyscada.models import VariableProperty
 import time
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 try:
@@ -38,17 +39,17 @@ class Handler(GenericDevice):
 
     # MDO functions
     def reset_instrument(self):
-        return self.inst.query('*RST;*OPC?')
+        return self.inst.query("*RST;*OPC?")
 
     def mdo_set_horizontal_scale(self, time_per_div, **kwargs):
-        self.inst.query(':HORIZONTAL:SCALE %s;*OPC?' % str(time_per_div))
+        self.inst.query(":HORIZONTAL:SCALE %s;*OPC?" % str(time_per_div))
 
     def mdo_horizontal_scale_in_period(self, period=1.0, frequency=1000, **kwargs):
         mdo_horiz_scale = str(round(float(period / (10.0 * float(frequency))), 15))
         self.mdo_set_horizontal_scale(mdo_horiz_scale)
 
     def mdo_set_vertical_scale(self, ch=1, value=1.0, **kwargs):
-        self.inst.query(':CH%d:SCALE %s;*OPC?' % (ch, str(value)))
+        self.inst.query(":CH%d:SCALE %s;*OPC?" % (ch, str(value)))
 
     def mdo_find_vertical_scale(self, ch=1, frequency=1000, range_i=None, **kwargs):
         vranges = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10]
@@ -68,7 +69,7 @@ class Handler(GenericDevice):
             if data is None:
                 failed += 1
                 if failed > 3:
-                    logger.debug('data is None more than 3 times')
+                    logger.debug("data is None more than 3 times")
                     break
                 continue
             failed = 0
@@ -77,66 +78,93 @@ class Handler(GenericDevice):
                 range_i += 3
                 range_i = min(len(vranges) - 1, range_i)
             if range_i == 0:
-                if np.max(abs(data)) < (mdo_div_quantity * 0.9 * vranges[range_i] / 2.0):
+                if np.max(abs(data)) < (
+                    mdo_div_quantity * 0.9 * vranges[range_i] / 2.0
+                ):
                     break
                 range_i = 1
                 continue
-            if (mdo_div_quantity * 0.9 * vranges[range_i - 1] / 2.0) <= np.max(abs(data)) \
-                    < (mdo_div_quantity * 0.9 * vranges[range_i] / 2.0):
+            if (
+                (mdo_div_quantity * 0.9 * vranges[range_i - 1] / 2.0)
+                <= np.max(abs(data))
+                < (mdo_div_quantity * 0.9 * vranges[range_i] / 2.0)
+            ):
                 break
-            range_i = max(range_i_min, np.where(vranges > 2.0 * np.max(abs(data)) / mdo_div_quantity * 0.9)[0][0])
+            range_i = max(
+                range_i_min,
+                np.where(vranges > 2.0 * np.max(abs(data)) / mdo_div_quantity * 0.9)[0][
+                    0
+                ],
+            )
 
-        #logger.debug(range_i)
+        # logger.debug(range_i)
         mdo_ch2_scale = str(vranges[range_i])
-        #logger.debug("Freq = %s - horiz scale = %s - ch2 scale = %s"
+        # logger.debug("Freq = %s - horiz scale = %s - ch2 scale = %s"
         #             % (int(frequency), str(round(float(1.0 / (10.0 * float(frequency))), 6)), mdo_ch2_scale))
         return range_i
 
     def mdo_query_peak_to_peak(self, ch=1, **kwargs):
-        return float(self.inst.query((':MEASUrement:IMMed:SOUrce1 CH%d;:MEASUREMENT:IMMED:TYPE PK2PK;'
-                                      ':MEASUREMENT:IMMED:VALUE?' % ch)))
+        return float(
+            self.inst.query(
+                (
+                    ":MEASUrement:IMMed:SOUrce1 CH%d;:MEASUREMENT:IMMED:TYPE PK2PK;"
+                    ":MEASUREMENT:IMMED:VALUE?" % ch
+                )
+            )
+        )
 
     def mdo_gain(self, source1=1, source2=2, **kwargs):
-        return 20 * np.log10(self.mdo_query_peak_to_peak(ch=source2) / self.mdo_query_peak_to_peak(ch=source1))
+        return 20 * np.log10(
+            self.mdo_query_peak_to_peak(ch=source2)
+            / self.mdo_query_peak_to_peak(ch=source1)
+        )
 
     def mdo_set_trigger_level(self, ch=1, level=0.0, **kwargs):
-        self.inst.query(':TRIG:A:LEV:CH%d %s;*OPC?;' % (ch, str(level)))
+        self.inst.query(":TRIG:A:LEV:CH%d %s;*OPC?;" % (ch, str(level)))
 
     def mdo_set_trigger_source(self, ch=1, **kwargs):
-        self.inst.query(':TRIG:A:EDGE:SOU CH%d;*OPC?;' % ch)
+        self.inst.query(":TRIG:A:EDGE:SOU CH%d;*OPC?;" % ch)
 
     def mdo_prepare(self, **kwargs):
-        self.inst.query(':SEL:CH1 1;:SEL:CH2 1;:HORIZONTAL:POSITION 0;:CH1:YUN "V";:CH2:YUN "V";'
-                        ':CH2:BANdwidth 10000000;:CH1:BANdwidth 10000000;:TRIG:A:TYP EDGE;:TRIG:A:EDGE:COUPLING DC;'
-                        ':TRIG:A:EDGE:SOU CH1;:TRIG:A:EDGE:SLO RIS;:TRIG:A:MODE NORM;:CH1:COUP DC;:CH2:COUP DC;*OPC?')
+        self.inst.query(
+            ':SEL:CH1 1;:SEL:CH2 1;:HORIZONTAL:POSITION 0;:CH1:YUN "V";:CH2:YUN "V";'
+            ":CH2:BANdwidth 10000000;:CH1:BANdwidth 10000000;:TRIG:A:TYP EDGE;:TRIG:A:EDGE:COUPLING DC;"
+            ":TRIG:A:EDGE:SOU CH1;:TRIG:A:EDGE:SLO RIS;:TRIG:A:MODE NORM;:CH1:COUP DC;:CH2:COUP DC;*OPC?"
+        )
 
-    def mdo_query_waveform(self, ch=1, points_resolution=100, frequency=1000, refresh=False, **kwargs):
-        self.inst.query(':SEL:CH%d 1;:HORIZONTAL:POSITION 0;:CH%d:YUN "V";'
-                        ':CH%d:BANdwidth 10000000;:TRIG:A:TYP EDGE;:TRIG:A:EDGE:COUPLING AC;'
-                        ':TRIG:A:EDGE:SLO RIS;:TRIG:A:MODE NORM;*OPC?' % (ch, ch, ch))
+    def mdo_query_waveform(
+        self, ch=1, points_resolution=100, frequency=1000, refresh=False, **kwargs
+    ):
+        self.inst.query(
+            ':SEL:CH%d 1;:HORIZONTAL:POSITION 0;:CH%d:YUN "V";'
+            ":CH%d:BANdwidth 10000000;:TRIG:A:TYP EDGE;:TRIG:A:EDGE:COUPLING AC;"
+            ":TRIG:A:EDGE:SLO RIS;:TRIG:A:MODE NORM;*OPC?" % (ch, ch, ch)
+        )
 
         # io config
-        self.inst.write('header 0')
-        self.inst.write('data:encdg SRIBINARY')
-        self.inst.write('data:source CH%d' % ch)  # channel
-        self.inst.write('data:snap')  # last sample
-        self.inst.write('wfmoutpre:byt_n 1')  # 1 byte per sample
+        self.inst.write("header 0")
+        self.inst.write("data:encdg SRIBINARY")
+        self.inst.write("data:source CH%d" % ch)  # channel
+        self.inst.write("data:snap")  # last sample
+        self.inst.write("wfmoutpre:byt_n 1")  # 1 byte per sample
 
         if refresh:
             # acq config
-            self.inst.write('acquire:state 0')  # stop
-            self.inst.write('acquire:stopafter SEQUENCE')  # single
-            self.inst.write('acquire:state 1')  # run
+            self.inst.write("acquire:state 0")  # stop
+            self.inst.write("acquire:stopafter SEQUENCE")  # single
+            self.inst.write("acquire:state 1")  # run
 
         # data query
-        self.inst.query('*OPC?')
-        bin_wave = self.inst.query_binary_values('curve?', datatype='b', container=np.array, delay=2 * 10 / frequency)
+        self.inst.query("*OPC?")
+        bin_wave = self.inst.query_binary_values(
+            "curve?", datatype="b", container=np.array, delay=2 * 10 / frequency
+        )
 
         # retrieve scaling factors
         # tscale = float(self.inst_mdo.query('wfmoutpre:xincr?'))
-        vscale = float(self.inst.query('wfmoutpre:ymult?'))  # volts / level
-        voff = float(self.inst.query('wfmoutpre:yzero?'))  # reference voltage
-        vpos = float(self.inst.query('wfmoutpre:yoff?'))  # reference position (level)
+        vscale = float(self.inst.query("wfmoutpre:ymult?"))  # volts / level
+        voff = float(self.inst.query("wfmoutpre:yzero?"))  # reference voltage
+        vpos = float(self.inst.query("wfmoutpre:yoff?"))  # reference position (level)
 
         # create scaled vectors
         # horizontal (time)
@@ -144,67 +172,77 @@ class Handler(GenericDevice):
         # tstop = tstart + total_time
         # scaled_time = np.linspace(tstart, tstop, num=record, endpoint=False)
         # vertical (voltage)
-        unscaled_wave = np.array(bin_wave, dtype='double')  # data type conversion
+        unscaled_wave = np.array(bin_wave, dtype="double")  # data type conversion
         scaled_wave = (unscaled_wave - vpos) * vscale + voff
         scaled_wave = scaled_wave.tolist()
 
         scaled_wave_mini = list()
         for i in range(0, points_resolution):
-            scaled_wave_mini.append(scaled_wave[i * int(len(scaled_wave) / points_resolution)])
+            scaled_wave_mini.append(
+                scaled_wave[i * int(len(scaled_wave) / points_resolution)]
+            )
 
         return np.asarray(scaled_wave_mini)
 
     def mdo_get_phase(self, source1=1, source2=2, frequency=1000, **kwargs):
         self.mdo_horizontal_scale_in_period(period=4.0, frequency=frequency)
-        self.inst.write(':MEASUrement:IMMed:SOUrce1 CH%d;:MEASUrement:IMMed:SOUrce2 CH%d;'
-                        ':MEASUREMENT:IMMed:TYPE PHASE' % (source1, source2))
+        self.inst.write(
+            ":MEASUrement:IMMed:SOUrce1 CH%d;:MEASUrement:IMMed:SOUrce2 CH%d;"
+            ":MEASUREMENT:IMMed:TYPE PHASE" % (source1, source2)
+        )
 
         # Start reading the phase
         retries = 0
         while retries < 3:
-            self.inst.write('acquire:state 0')  # stop
-            self.inst.write('acquire:stopafter SEQUENCE')  # single
-            self.inst.write('acquire:state 1')  # run
-            self.inst.query('*OPC?')
-            phase = float(self.inst.query(':MEASUREMENT:IMMED:VALUE?;'))
+            self.inst.write("acquire:state 0")  # stop
+            self.inst.write("acquire:stopafter SEQUENCE")  # single
+            self.inst.write("acquire:state 1")  # run
+            self.inst.query("*OPC?")
+            phase = float(self.inst.query(":MEASUREMENT:IMMED:VALUE?;"))
             retries += 1
             if -360 < phase < 360:
                 break
             if retries >= 3:
                 phase = None
                 break
-            logger.debug('Wrong phase = %s' % phase)
+            logger.debug("Wrong phase = %s" % phase)
             time.sleep(1)
         if phase is not None and phase < -180:
             phase += 360
         self.mdo_horizontal_scale_in_period(period=4.0, frequency=frequency)
 
-        a = self.mdo_query_waveform(ch=1, frequency=frequency, refresh=True, points_resolution=10000)
-        b = self.mdo_query_waveform(ch=2, frequency=frequency, refresh=False, points_resolution=10000)
+        a = self.mdo_query_waveform(
+            ch=1, frequency=frequency, refresh=True, points_resolution=10000
+        )
+        b = self.mdo_query_waveform(
+            ch=2, frequency=frequency, refresh=False, points_resolution=10000
+        )
         phase2 = self.find_phase_2_signals(a, b, frequency, self.mdo_horizontal_time())
-        #logger.debug('phase oscillo = %s - phase scipy = %s' % (phase, phase2))
+        # logger.debug('phase oscillo = %s - phase scipy = %s' % (phase, phase2))
         return phase, phase2
 
     def mdo_horizontal_time(self):
-        record = int(self.inst.query('horizontal:recordlength?'))
-        tscale = float(self.inst.query('wfmoutpre:xincr?'))
+        record = int(self.inst.query("horizontal:recordlength?"))
+        tscale = float(self.inst.query("wfmoutpre:xincr?"))
         return tscale * record
 
     def mdo_xincr(self):
-        return float(self.inst.query('wfmoutpre:xincr?'))
+        return float(self.inst.query("wfmoutpre:xincr?"))
 
     def fft(self, eta):
         nfft = len(eta)
         hanning = np.hanning(nfft) * eta
         spectrum_hanning = abs(np.fft.fft(hanning))
-        spectrum_hanning = spectrum_hanning * 2 * 2 / nfft  # also correct for Hann filter
+        spectrum_hanning = (
+            spectrum_hanning * 2 * 2 / nfft
+        )  # also correct for Hann filter
         return spectrum_hanning
 
     def find_phase_2_signals(self, a, b, frequency, tmax):
         period = 1 / frequency  # period of oscillations (seconds)
         tmax = float(tmax)
         nsamples = int(a.size)
-        #logger.debug('tmax = %s - nsamples = %s' % (tmax, nsamples))  # length of time series (seconds)
+        # logger.debug('tmax = %s - nsamples = %s' % (tmax, nsamples))  # length of time series (seconds)
 
         # construct time array
         t = np.linspace(0.0, tmax, nsamples, endpoint=False)
@@ -218,10 +256,16 @@ class Handler(GenericDevice):
         recovered_time_shift = dt[np.argmax(xcorr)]
 
         # force the phase shift to be in [-pi:pi]
-        recovered_phase_shift = 2 * np.pi * (((0.5 + recovered_time_shift / period) % 1.0) - 0.5)
-        recovered_phase_shift_before = 2 * np.pi * (((0.5 + dt[np.argmax(xcorr) - 1] / period) % 1.0) - 0.5)
-        recovered_phase_shift_after = 2 * np.pi * (((0.5 + dt[np.argmax(xcorr) + 1] / period) % 1.0) - 0.5)
-        #logger.debug('phase - 1 = %s - phase = %s - phase + 1 = %s' %
+        recovered_phase_shift = (
+            2 * np.pi * (((0.5 + recovered_time_shift / period) % 1.0) - 0.5)
+        )
+        recovered_phase_shift_before = (
+            2 * np.pi * (((0.5 + dt[np.argmax(xcorr) - 1] / period) % 1.0) - 0.5)
+        )
+        recovered_phase_shift_after = (
+            2 * np.pi * (((0.5 + dt[np.argmax(xcorr) + 1] / period) % 1.0) - 0.5)
+        )
+        # logger.debug('phase - 1 = %s - phase = %s - phase + 1 = %s' %
         #             (recovered_phase_shift_before * 180 / np.pi, recovered_phase_shift * 180 / np.pi,
         #              recovered_phase_shift_after * 180 / np.pi))
 

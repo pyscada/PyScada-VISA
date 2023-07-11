@@ -6,15 +6,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('visa', '0001_initial'),
+        ("visa", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='visadevicehandler',
-            name='handler_path',
-            field=models.CharField(blank=True, default=None, help_text=b'', max_length=255, null=True),
+            model_name="visadevicehandler",
+            name="handler_path",
+            field=models.CharField(
+                blank=True, default=None, help_text=b"", max_length=255, null=True
+            ),
         ),
     ]

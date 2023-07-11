@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('visa', '0010_devicehandler_migration'),
+        ("visa", "0010_devicehandler_migration"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='visadevice',
-            name='instrument',
+            model_name="visadevice",
+            name="instrument",
         ),
     ]
