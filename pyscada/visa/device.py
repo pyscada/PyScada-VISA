@@ -47,8 +47,8 @@ class Device(GenericDevice):
                 continue
             # read_value = self._h.write_data(item.visavariable.device_property, value)
             read_value = self._h.write_data(variable_id, value, task)
-            if read_value is not None and item.update_value(read_value, time()):
-                output.append(item.create_recorded_data_element())
+            if read_value is not None and item.update_values([read_value], [time()]):
+                output.append(item)
             else:
                 logger.info(f"Visa-Output not ok : {output}")
         return output

@@ -111,8 +111,8 @@ class GenericDevice(GenericHandlerDevice):
 
             value, time = self.read_data_and_time(item)
 
-            if value is not None and item.update_value(value, time):
-                output.append(item.create_recorded_data_element())
+            if value is not None and item.update_values([value], [time]):
+                output.append(item)
         self.after_read()
         return output
 
